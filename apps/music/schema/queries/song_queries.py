@@ -40,11 +40,8 @@ class SongQuery(graphene.ObjectType):
         description="Get trending songs",
     )
 
-    recommended_songs = graphene.List(
-        SongType,
-        limit=graphene.Int(default_value=30),
-        description="Get personalized song recommendations for current user",
-    )
+    # NOTE: recommended_songs is now provided by recommendations.schema
+    # to avoid conflicts and provide richer response with scores and reasons
 
     artist_songs = graphene.List(
         SongType,
@@ -90,13 +87,7 @@ class SongQuery(graphene.ObjectType):
     def resolve_trending_songs(self, info, time_range="WEEK", limit=50):
         return SongService.get_trending_songs(time_range, limit)
 
-    def resolve_recommended_songs(self, info, limit=30):
-        user = info.context.user
-        if not user.is_authenticated:
-            # Return popular songs for non-authenticated users
-            return Song.objects.order_by("-play_count")[:limit]
-
-        return SongService.get_recommended_songs(user, limit)
+    # NOTE: resolve_recommended_songs removed - now handled by recommendations.schema
 
     def resolve_artist_songs(self, info, artist_id, limit=20):
         try:
