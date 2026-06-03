@@ -10,7 +10,7 @@ from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="your-secret-key-here")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=True, cast=bool)
@@ -258,12 +258,6 @@ LOGGING = {
             "backupCount": 10,
             "formatter": "verbose",
             "encoding": "utf-8",
-        },
-        # Sentry para producción (opcional)
-        "sentry": {
-            "level": "ERROR",
-            "class": "sentry_sdk.integrations.logging.EventHandler",
-            "filters": ["require_debug_false"],
         },
     },
     # Loggers
