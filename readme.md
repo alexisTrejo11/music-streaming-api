@@ -60,33 +60,20 @@ See [Project Features](docs/generated/ProjectFeature.md) for the complete featur
 
 ## Documentation
 
-This repository keeps **structured source** in `docs/source/` (YAML frontmatter + notes) and **human-readable docs** in `docs/generated/`, produced by `docs/yaml_to_markdown.py`. The TypeScript contract for portfolio tools is [`docs/source/schema.ts`](docs/source/schema.ts).
+The documentation for this project is externally hosted in my personal website: [alexis-trejo.com](https://alexis-trejo.com).
 
-### Documentation index
+### Documentation hub
 
 | Document | What you will find | Read |
 |----------|-------------------|------|
-| **Overview** | Problem, solution, metrics, links | [ProjectOverview.md](docs/generated/ProjectOverview.md) |
-| **Metadata** | Project id, version, tech stack, URLs | [ProjectMetadata.md](docs/generated/ProjectMetadata.md) |
-| **API schema** | GraphQL operations, auth, examples | [APISchema.md](docs/generated/APISchema.md) |
-| **Architecture** | Layers, patterns, diagram, data flows | [ProjectArchitecture.md](docs/generated/ProjectArchitecture.md) |
-| **Infrastructure** | Docker, ECS/EC2, RDS, Redis, cloud services | [ProjectInfrastructure.md](docs/generated/ProjectInfrastructure.md) |
-| **Features** | Feature cards, snippets, status per area | [ProjectFeature.md](docs/generated/ProjectFeature.md) |
-| **Code showcase** | Curated code examples from the codebase | [ProjectCodeShowCase.md](docs/generated/ProjectCodeShowCase.md) |
-| **Generated index** | Auto-generated hub linking all of the above | [docs/generated/README.md](docs/generated/README.md) |
+| **Overview** | Problem, solution, metrics, links | [ProjectOverview.md](https://alexis-trejo.com/projects/music-streaming-api/overview) |
+| **API schema** | GraphQL operations, auth, examples | [APISchema.md](https://alexis-trejo.com/projects/music-streaming-api/api-schema) |
+| **Architecture** | Layers, patterns, diagram, data flows | [ProjectArchitecture.md](https://alexis-trejo.com/projects/music-streaming-api/architecture) |
+| **Infrastructure** | Docker, ECS/EC2, RDS, Redis, cloud services | [ProjectInfrastructure.md](https://alexis-trejo.com/projects/music-streaming-api/infrastructure) |
+| **Features** | Feature cards, snippets, status per area | [ProjectFeature.md](https://alexis-trejo.com/projects/music-streaming-api/features) |
+| **Code showcase** | Curated code examples from the codebase | [ProjectCodeShowCase.md](https://alexis-trejo.com/projects/music-streaming-api/code-showcase) |
+| **Generated index** | Auto-generated hub linking all of the above | [docs/generated/README.md](https://alexis-trejo.com/projects/music-streaming-api/generated-index) |
 
-### Source vs generated
-
-| Path | Purpose |
-|------|---------|
-| `docs/source/*.md` | Edit YAML frontmatter here (machine-friendly, matches `schema.ts`) |
-| `docs/generated/*.md` | Read here on GitHub / in the IDE (do not edit by hand) |
-| `docs/yaml_to_markdown.py` | Regenerates `docs/generated/` from `docs/source/` |
-
-```bash
-pip install pyyaml
-python docs/yaml_to_markdown.py
-```
 
 ---
 
