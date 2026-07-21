@@ -140,12 +140,11 @@ jobs:
             "export GHCR_TOKEN=$(printf '%q' "$GHCR_TOKEN") GHCR_USER=$(printf '%q' "$GHCR_USER") IMAGE=$(printf '%q' "$IMAGE"); bash -s" <<'REMOTE'
           set -euo pipefail
 
-          cd ~/homeslab/deploys/servers/music-streaming
+          cd ~/homelab/deploys/servers/music-streaming
 
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
-          docker compose pull web
-          docker compose up -d --remove-orphans web
+          make refresh
 
           # Safe cleanup: only unused images for THIS project (not host-wide prune).
           echo "Cleaning unused images for $IMAGE only..."
