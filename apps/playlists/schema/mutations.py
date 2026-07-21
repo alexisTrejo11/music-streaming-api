@@ -1,7 +1,6 @@
 import graphene
 import logging
 from graphql import GraphQLError
-from django.core.exceptions import PermissionDenied
 from apps.core.base_schema import BaseMutation
 from apps.core.decorators import auth_required, get_authenticated_user
 from .inputs import (
@@ -25,7 +24,7 @@ class CreatePlaylist(BaseMutation):
     playlist = graphene.Field(PlaylistType)
 
     @classmethod
-    @auth_required
+    @auth_required(message="You must be logged in")
     def mutate(cls, root, info, input):
         user = get_authenticated_user(info)
         logger.info(
@@ -211,6 +210,8 @@ class FollowPlaylist(BaseMutation):
 
         try:
             result = PlaylistService.follow_playlist(user, playlist_id)
+            if not result["success"]:
+                return cls.failure_response(message=result["message"])
             logger.info(
                 f"Playlist {playlist_id} followed successfully by user {user.id}"
             )
@@ -239,6 +240,8 @@ class UnfollowPlaylist(BaseMutation):
 
         try:
             result = PlaylistService.unfollow_playlist(user, playlist_id)
+            if not result["success"]:
+                return cls.failure_response(message=result["message"])
             logger.info(
                 f"Playlist {playlist_id} unfollowed successfully by user {user.id}"
             )

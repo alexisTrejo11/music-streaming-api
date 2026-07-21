@@ -1,8 +1,7 @@
 import graphene
 import logging
 from apps.core.base_schema import TypedBaseMutation
-from apps.core.decorators import auth_required, get_authenticated_user
-from django.core.exceptions import PermissionDenied
+from apps.core.decorators import staff_required, get_authenticated_user
 from .inputs import CreateArtistInput, UpdateArtistInput, AddArtistMemberInput
 from .types import ArtistType
 from ..services import ArtistService
@@ -19,16 +18,10 @@ class CreateArtist(TypedBaseMutation):
         input = CreateArtistInput(required=True)
 
     @classmethod
-    @auth_required
+    @staff_required(message="You don't have permission to create artists")
     def mutate(cls, root, info, input):
         user = get_authenticated_user(info)
         logger.info(f"User {user.id} attempting to create artist: {input.get('name')}")
-
-        if not (user.is_staff or user.is_superuser):
-            logger.warning(f"User {user.id} denied permission to create artists")
-            return cls.failure_response(
-                message="You don't have permission to create artists"
-            )
 
         try:
             artist = ArtistService.create_artist(input)
@@ -51,16 +44,10 @@ class UpdateArtist(TypedBaseMutation):
         input = UpdateArtistInput(required=True)
 
     @classmethod
-    @auth_required
+    @staff_required(message="You don't have permission to update artists")
     def mutate(cls, root, info, id, input):
         user = get_authenticated_user(info)
         logger.info(f"User {user.id} attempting to update artist {id}")
-
-        if not (user.is_staff or user.is_superuser):
-            logger.warning(f"User {user.id} denied permission to update artists")
-            return cls.failure_response(
-                message="You don't have permission to update artists"
-            )
 
         try:
             artist = ArtistService.update_artist(id, input)
@@ -80,16 +67,10 @@ class DeleteArtist(TypedBaseMutation):
         id = graphene.ID(required=True)
 
     @classmethod
-    @auth_required
+    @staff_required(message="You don't have permission to delete artists")
     def mutate(cls, root, info, id):
         user = get_authenticated_user(info)
         logger.info(f"User {user.id} attempting to delete artist {id}")
-
-        if not (user.is_staff or user.is_superuser):
-            logger.warning(f"User {user.id} denied permission to delete artists")
-            return cls.failure_response(
-                message="You don't have permission to delete artists"
-            )
 
         try:
             ArtistService.delete_artist(id)
@@ -109,18 +90,12 @@ class AddArtistMember(TypedBaseMutation):
         input = AddArtistMemberInput(required=True)
 
     @classmethod
-    @auth_required
+    @staff_required(message="You don't have permission to add artist members")
     def mutate(cls, root, info, input):
         user = get_authenticated_user(info)
         logger.info(
             f"User {user.id} attempting to add member to artist {input.get('artist_id')}"
         )
-
-        if not (user.is_staff or user.is_superuser):
-            logger.warning(f"User {user.id} denied permission to add artist members")
-            return cls.failure_response(
-                message="You don't have permission to add artist members"
-            )
 
         try:
             artist = ArtistService.add_member(input)
@@ -143,18 +118,12 @@ class RemoveArtistMember(TypedBaseMutation):
         member_id = graphene.ID(required=True)
 
     @classmethod
-    @auth_required
+    @staff_required(message="You don't have permission to remove artist members")
     def mutate(cls, root, info, artist_id, member_id):
         user = get_authenticated_user(info)
         logger.info(
             f"User {user.id} attempting to remove member {member_id} from artist {artist_id}"
         )
-
-        if not (user.is_staff or user.is_superuser):
-            logger.warning(f"User {user.id} denied permission to remove artist members")
-            return cls.failure_response(
-                message="You don't have permission to remove artist members"
-            )
 
         try:
             artist = ArtistService.remove_member(member_id)

@@ -1,16 +1,18 @@
 import graphene
 from graphql import GraphQLError
-from django.core.exceptions import PermissionDenied
-from ...models import Album, Song
-from ..types import SongType, AlbumType
-from ...services import SongService, AlbumService
+from ..types import SongType
+from ...services import SongService
 from ..inputs import (
     CreateSongInput,
     UpdateSongInput,
-    CreateAlbumInput,
-    UpdateAlbumInput,
 )
 from apps.core.base_schema import BaseMutation
+from apps.core.decorators import (
+    auth_required,
+    staff_required,
+    superuser_required,
+    get_authenticated_user,
+)
 
 
 class CreateSong(BaseMutation):
@@ -20,15 +22,8 @@ class CreateSong(BaseMutation):
         input = CreateSongInput(required=True)
 
     @classmethod
+    @staff_required(message="You don't have permission to create songs")
     def mutate(cls, root, info, input):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("Authentication required")
-
-        if not (user.is_staff or user.is_superuser):
-            raise PermissionDenied("You don't have permission to create songs")
-
         try:
             song = SongService.create_song(input)
             return CreateSong.success_response(
@@ -46,15 +41,8 @@ class UpdateSong(BaseMutation):
         input = UpdateSongInput(required=True)
 
     @classmethod
+    @staff_required(message="You don't have permission to update songs")
     def mutate(cls, root, info, id, input):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("Authentication required")
-
-        if not (user.is_staff or user.is_superuser):
-            raise PermissionDenied("You don't have permission to update songs")
-
         try:
             song = SongService.update_song(id, input)
             return UpdateSong.success_response(
@@ -71,15 +59,8 @@ class DeleteSong(BaseMutation):
         id = graphene.ID(required=True)
 
     @classmethod
+    @superuser_required(message="Only superusers can delete songs")
     def mutate(cls, root, info, id):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("Authentication required")
-
-        if not user.is_superuser:
-            raise PermissionDenied("Only superusers can delete songs")
-
         try:
             SongService.delete_song(id)
             return DeleteSong.success_response(message="Song deleted successfully")
@@ -98,11 +79,9 @@ class LikeSong(BaseMutation):
     song = graphene.Field(SongType)
 
     @classmethod
+    @auth_required(message="You must be logged in to like songs")
     def mutate(cls, root, info, song_id):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("You must be logged in to like songs")
+        user = get_authenticated_user(info)
 
         try:
             result = SongService.like_song(user, song_id)
@@ -125,11 +104,9 @@ class UnlikeSong(BaseMutation):
     message = graphene.String()
 
     @classmethod
+    @auth_required(message="You must be logged in to unlike songs")
     def mutate(cls, root, info, song_id):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("You must be logged in to unlike songs")
+        user = get_authenticated_user(info)
 
         try:
             result = SongService.unlike_song(user, song_id)
@@ -150,11 +127,9 @@ class PlaySong(graphene.Mutation):
     message = graphene.String()
 
     @classmethod
+    @auth_required(message="You must be logged in")
     def mutate(cls, root, info, song_id, source=None, source_id=None):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("You must be logged in")
+        user = get_authenticated_user(info)
 
         try:
             SongService.track_play(user, song_id, source, source_id)

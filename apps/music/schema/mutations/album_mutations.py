@@ -1,12 +1,11 @@
 import graphene
-from django.core.exceptions import PermissionDenied
 from apps.music.services import AlbumService
-from ..types import AlbumType
 from ..inputs import (
     CreateAlbumInput,
     UpdateAlbumInput,
 )
 from apps.core.base_schema import BaseMutation
+from apps.core.decorators import staff_required
 
 
 class CreateAlbum(BaseMutation):
@@ -16,15 +15,8 @@ class CreateAlbum(BaseMutation):
         input = CreateAlbumInput(required=True)
 
     @classmethod
+    @staff_required(message="You don't have permission to update albums")
     def mutate(cls, root, info, input):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("Authentication required")
-
-        if not (user.is_staff or user.is_superuser):
-            raise PermissionDenied("You don't have permission to update albums")
-
         try:
             album = AlbumService.create_album(input)
             return CreateAlbum.success_response(
@@ -42,15 +34,8 @@ class UpdateAlbum(BaseMutation):
         input = UpdateAlbumInput(required=True)
 
     @classmethod
+    @staff_required(message="You don't have permission to update albums")
     def mutate(cls, root, info, id, input):
-        user = info.context.user
-
-        if not user.is_authenticated:
-            raise PermissionDenied("Authentication required")
-
-        if not (user.is_staff or user.is_superuser):
-            raise PermissionDenied("You don't have permission to update albums")
-
         try:
             album = AlbumService.update_album(id, input)
             return UpdateAlbum.success_response(
